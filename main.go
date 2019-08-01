@@ -11,6 +11,7 @@ import (
 )
 
 var bodyToShow [] string
+var notificationToShow [] string
 
 type RequestData struct {
 	RespBody string `json:"respBody"`
@@ -23,6 +24,8 @@ func main() {
 	http.HandleFunc("/show", show)
 	http.HandleFunc("/delay", delayRequest)
 	http.HandleFunc("/delay11", delayEleven)
+	http.HandleFunc("/notification", notification)
+	http.HandleFunc("/shownotification", showNotification)
 
 	err := http.ListenAndServe(":9099", nil)
 
@@ -112,4 +115,34 @@ func delayEleven(w http.ResponseWriter, r *http.Request) {
 		w.Write(body)
 	}
 	defer r.Body.Close()
+}
+
+func notification(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "POST" {
+		w.WriteHeader(http.StatusOK)
+		body, err := ioutil.ReadAll(r.Body)
+		log.Println(string(body))
+		if err != nil {
+			log.Print(err)
+		}
+		notificationToShow = append(notificationToShow, string(body))
+		w.Write([]byte("{\"status\":\"ok\"}"))
+	}
+	defer r.Body.Close()
+}
+
+func showNotification(w http.ResponseWriter, req *http.Request) {
+
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	var str string
+
+	for _, res := range notificationToShow {
+		str += "<span>" + res + "</span>" + "<p>"
+	}
+	bodyToShow = nil
+
+	fmt.Println(str)
+
+	w.WriteHeader(http.StatusOK)
+	io.WriteString(w, str)
 }
