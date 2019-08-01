@@ -140,7 +140,7 @@ func showNotification(w http.ResponseWriter, req *http.Request) {
 		str += "<span>" + res + "</span>" + "<p>"
 	}
 	bodyToShow = nil
-
+	notificationToShow = nil
 	fmt.Println(str)
 
 	w.WriteHeader(http.StatusOK)
