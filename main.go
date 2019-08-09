@@ -169,6 +169,7 @@ func saveNotifications(w http.ResponseWriter, r *http.Request) {
 			testNotifications = nil
 		}
 		testNotifications = append(testNotifications, string(body))
+		fmt.Println(testNotifications)
 		w.Write([]byte("{\"status\":\"ok\"}"))
 	}
 	defer r.Body.Close()
