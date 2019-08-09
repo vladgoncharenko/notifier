@@ -12,6 +12,7 @@ import (
 
 var bodyToShow [] string
 var notificationToShow [] string
+var testNotifications [] string
 
 type RequestData struct {
 	RespBody string `json:"respBody"`
@@ -26,6 +27,8 @@ func main() {
 	http.HandleFunc("/delay11", delayEleven)
 	http.HandleFunc("/notification", notification)
 	http.HandleFunc("/shownotification", showNotification)
+	http.HandleFunc("/savenotification", saveNotifications)
+	http.HandleFunc("/backnotification", backNotifications)
 
 	err := http.ListenAndServe(":9099", nil)
 
@@ -57,6 +60,9 @@ func ui(w http.ResponseWriter, r *http.Request) {
 			log.Print(err)
 		}
 		log.Println(string(body))
+		if len(bodyToShow) > 100 {
+			bodyToShow = nil
+		}
 		bodyToShow = append(bodyToShow, string(body))
 	}
 	w.Write([]byte("127.0.0.1:9099/show"))
@@ -125,6 +131,10 @@ func notification(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Print(err)
 		}
+
+		if len(notificationToShow) > 100 {
+			notificationToShow = nil
+		}
 		notificationToShow = append(notificationToShow, string(body))
 		w.Write([]byte("{\"status\":\"ok\"}"))
 	}
@@ -132,7 +142,6 @@ func notification(w http.ResponseWriter, r *http.Request) {
 }
 
 func showNotification(w http.ResponseWriter, req *http.Request) {
-
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	var str string
 
@@ -145,4 +154,31 @@ func showNotification(w http.ResponseWriter, req *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 	io.WriteString(w, str)
+}
+
+func saveNotifications(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "POST" {
+		w.WriteHeader(http.StatusOK)
+		body, err := ioutil.ReadAll(r.Body)
+		log.Println(string(body))
+		if err != nil {
+			log.Print(err)
+		}
+
+		if len(testNotifications) > 100 {
+			testNotifications = nil
+		}
+		testNotifications = append(testNotifications, string(body))
+		w.Write([]byte("{\"status\":\"ok\"}"))
+	}
+	defer r.Body.Close()
+}
+
+func backNotifications(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "POST" {
+		w.WriteHeader(http.StatusOK)
+		list, _ := json.Marshal(testNotifications)
+		w.Write([]byte(list))
+	}
+	defer r.Body.Close()
 }
