@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/vladgoncharenko/notificationServer/models"
 	"io"
 	"io/ioutil"
 	"log"
@@ -13,6 +14,7 @@ import (
 var bodyToShow [] string
 var notificationToShow [] string
 var testNotifications [] string
+var testNotificationsTemp []models.Status
 
 type RequestData struct {
 	RespBody string `json:"respBody"`
@@ -29,6 +31,9 @@ func main() {
 	http.HandleFunc("/shownotification", showNotification)
 	http.HandleFunc("/savenotification", saveNotifications)
 	http.HandleFunc("/backnotification", backNotifications)
+
+	//http.HandleFunc("/savenotification2", saveNotifications2)
+	//http.HandleFunc("/backnotification2", backNotifications2)
 
 	err := http.ListenAndServe(":9099", nil)
 
@@ -156,30 +161,48 @@ func showNotification(w http.ResponseWriter, req *http.Request) {
 	io.WriteString(w, str)
 }
 
+
 func saveNotifications(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		w.WriteHeader(http.StatusOK)
+
 		body, err := ioutil.ReadAll(r.Body)
-		log.Println(string(body))
-		if err != nil {
-			log.Print(err)
-		}
+
+		errorHandeler(err)
 
 		if len(testNotifications) > 100 {
 			testNotifications = nil
 		}
-		testNotifications = append(testNotifications, string(body))
-		fmt.Println(testNotifications)
+
+		notific := &models.Status{}
+
+		err = json.Unmarshal(body, &notific)
+
+		errorHandeler(err)
+
+		testNotificationsTemp = append(testNotificationsTemp, *notific)
+
 		w.Write([]byte("{\"status\":\"ok\"}"))
 	}
 	defer r.Body.Close()
 }
 
+
+
 func backNotifications(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		w.WriteHeader(http.StatusOK)
-		list, _ := json.Marshal(testNotifications)
+		w.Header().Add("content", "")
+		list, _ := json.Marshal(testNotificationsTemp)
+
 		w.Write([]byte(list))
+		testNotificationsTemp = nil
 	}
 	defer r.Body.Close()
+}
+
+func errorHandeler(err error) {
+	if err != nil {
+		log.Print(err)
+	}
 }
