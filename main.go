@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/vladgoncharenko/notifier/actions/solidGate"
 	"github.com/vladgoncharenko/notifier/models"
 	"io"
 	"io/ioutil"
@@ -32,8 +33,9 @@ func main() {
 	http.HandleFunc("/savenotification", saveNotifications)
 	http.HandleFunc("/backnotification", backNotifications)
 
-	//http.HandleFunc("/savenotification2", saveNotifications2)
-	//http.HandleFunc("/backnotification2", backNotifications2)
+	http.HandleFunc("/sheader", solidGate.SavekHeader)
+	http.HandleFunc("/bheader", solidGate.BackHeader)
+
 
 	err := http.ListenAndServe(":9099", nil)
 
@@ -186,7 +188,6 @@ func saveNotifications(w http.ResponseWriter, r *http.Request) {
 	}
 	defer r.Body.Close()
 }
-
 
 
 func backNotifications(w http.ResponseWriter, r *http.Request) {
