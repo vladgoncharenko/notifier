@@ -1,9 +1,6 @@
 package models
 
 type StatusSolidGate struct {
-	PayForm struct {
-		Token string `json:"token, omitempty"`
-	} `json:"pay_form,omitempty"`
 
 	Order struct {
 		Order_id           string `json:"order_id,omitempty"`
@@ -18,6 +15,7 @@ type StatusSolidGate struct {
 	} `json:"order,omitempty"`
 
 	Transactions [] struct {
+		Type       string `json:"type,omitempty"`
 		Id         string `json:"id,omitempty"`
 		Operation  string `json:"operation,omitempty"`
 		Status     string `json:"status,omitempty"`
@@ -30,8 +28,8 @@ type StatusSolidGate struct {
 		} `json:"fee,omitempty"`
 	} `json:"transactions,omitempty"`
 
-	Card struct {
-		Bank           string `json:"bank,omitempty"`
+	CardToken struct {
+		Token          string `json:"token,omitempty"`
 		Bin            string `json:"bin,omitempty"`
 		Brand          string `json:"brand,omitempty"`
 		Country        string `json:"country,omitempty"`
@@ -39,10 +37,7 @@ type StatusSolidGate struct {
 		Card_exp_month string `json:"card_exp_month,omitempty"`
 		Card_exp_year  string `json:"card_exp_year,omitempty"`
 		Card_type      string `json:"card_type,omitempty"`
-		Card_token     struct {
-			Token string `json:"token,omitempty"`
-		} `json:"card_token,omitempty"`
-	} `json:"card,omitempty"`
+	} `json:"card_token,omitempty"`
 
 	Verify_url string `json:"verify_url,omitempty,omitempty"`
 }

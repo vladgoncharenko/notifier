@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/vladgoncharenko/notifier/actions/gate"
 	"github.com/vladgoncharenko/notifier/actions/solidGate"
 	"github.com/vladgoncharenko/notifier/models"
 	"io"
@@ -30,14 +31,13 @@ func main() {
 	http.HandleFunc("/delay11", delayEleven)
 	http.HandleFunc("/notification", notification)
 	http.HandleFunc("/shownotification", showNotification)
-	http.HandleFunc("/savenotification", saveNotifications)
-	http.HandleFunc("/backnotification", backNotifications)
 
-	http.HandleFunc("/saveSolidProd", solidGate.SaveSolidGateProd)
-	http.HandleFunc("/backSolidProd", solidGate.BackSolidGateProd)
+	http.HandleFunc("/savenotification", gate.SaveNotifications)
+	http.HandleFunc("/backnotification", gate.BackNotifications)
 
-	http.HandleFunc("/saveSolidStage", solidGate.SaveSolidGateStage)
-	http.HandleFunc("/backSolidStage", solidGate.BackSolidGateStage)
+	http.HandleFunc("/saveSolid", solidGate.SaveSolidGateProd)
+	http.HandleFunc("/backSolid", solidGate.BackSolidGateProd)
+
 
 	err := http.ListenAndServe(":9099", nil)
 
@@ -173,8 +173,8 @@ func saveNotifications(w http.ResponseWriter, r *http.Request) {
 
 		errorHandeler(err)
 
-		if len(testNotifications) > 100 {
-			testNotifications = nil
+		if len(testNotificationsTemp) > 100 {
+			testNotificationsTemp = nil
 		}
 
 		notific := &models.Status{}

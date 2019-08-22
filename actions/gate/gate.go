@@ -1,4 +1,4 @@
-package solidGate
+package gate
 
 import (
 	"encoding/json"
@@ -7,9 +7,9 @@ import (
 	"net/http"
 )
 
-var listNotifications [] interface{}
+var notificationGate [] interface{}
 
-func SaveSolidGateProd(w http.ResponseWriter, r *http.Request) {
+func SaveNotifications(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		w.WriteHeader(http.StatusOK)
 
@@ -17,8 +17,8 @@ func SaveSolidGateProd(w http.ResponseWriter, r *http.Request) {
 
 		errorHandeler(err)
 
-		if len(listNotifications) > 100 {
-			listNotifications = nil
+		if len(notificationGate) > 100 {
+			notificationGate = nil
 		}
 
 		var notific interface{}
@@ -27,25 +27,24 @@ func SaveSolidGateProd(w http.ResponseWriter, r *http.Request) {
 
 		errorHandeler(err)
 
-		listNotifications = append(listNotifications, notific)
+		notificationGate = append(notificationGate, notific)
 
 		w.Write([]byte("{\"status\":\"ok\"}"))
 	}
 	defer r.Body.Close()
 }
 
-func BackSolidGateProd(w http.ResponseWriter, r *http.Request) {
+func BackNotifications(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		w.WriteHeader(http.StatusOK)
-		list, _ := json.Marshal(listNotifications)
+		w.Header().Add("content", "")
+		list, _ := json.Marshal(notificationGate)
 
 		w.Write([]byte(list))
-		listNotifications = nil
+		notificationGate = nil
 	}
 	defer r.Body.Close()
 }
-
-
 
 func errorHandeler(err error) {
 	if err != nil {
