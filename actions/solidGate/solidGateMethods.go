@@ -8,10 +8,10 @@ import (
 	"net/http"
 )
 
-var listNotifications []models.StatusSolidGate
-var tempList [] string
+var listNotificationsProd []models.StatusSolidGate
+var listNotificationsStage []models.StatusSolidGate
 
-func SaveSolidGateNotific(w http.ResponseWriter, r *http.Request) {
+func SaveSolidGateProd(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		w.WriteHeader(http.StatusOK)
 
@@ -19,8 +19,8 @@ func SaveSolidGateNotific(w http.ResponseWriter, r *http.Request) {
 
 		errorHandeler(err)
 
-		if len(listNotifications) > 100 {
-			listNotifications = nil
+		if len(listNotificationsProd) > 100 {
+			listNotificationsProd = nil
 		}
 
 		notific := &models.StatusSolidGate{}
@@ -29,47 +29,60 @@ func SaveSolidGateNotific(w http.ResponseWriter, r *http.Request) {
 
 		errorHandeler(err)
 
-		listNotifications = append(listNotifications, *notific)
+		listNotificationsProd = append(listNotificationsProd, *notific)
 
 		w.Write([]byte("{\"status\":\"ok\"}"))
 	}
 	defer r.Body.Close()
 }
 
-func BackSolidGateNotific(w http.ResponseWriter, r *http.Request) {
+func BackSolidGateProd(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		w.WriteHeader(http.StatusOK)
-		list, _ := json.Marshal(listNotifications)
+		list, _ := json.Marshal(listNotificationsProd)
 
 		w.Write([]byte(list))
-		listNotifications = nil
+		listNotificationsProd = nil
 	}
 	defer r.Body.Close()
 }
 
-func SavekHeader(w http.ResponseWriter, r *http.Request) {
+func SaveSolidGateStage(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("{\"status\":\"ok\"}"))
-		header := r.Header
 
-		for v := range header {
-			tempList = append(tempList, header.Get(v))
+		body, err := ioutil.ReadAll(r.Body)
+
+		errorHandeler(err)
+
+		if len(listNotificationsStage) > 100 {
+			listNotificationsStage = nil
 		}
 
-	}
-}
+		notific := &models.StatusSolidGate{}
 
-func BackHeader(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "POST" {
-		w.WriteHeader(http.StatusOK)
-		list, _ := json.Marshal(tempList)
+		err = json.Unmarshal(body, &notific)
 
-		w.Write([]byte(list))
-		tempList = nil
+		errorHandeler(err)
+
+		listNotificationsStage = append(listNotificationsStage, *notific)
+
+		w.Write([]byte("{\"status\":\"ok\"}"))
 	}
 	defer r.Body.Close()
 }
+
+func BackSolidGateStage(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "POST" {
+		w.WriteHeader(http.StatusOK)
+		list, _ := json.Marshal(listNotificationsStage)
+
+		w.Write([]byte(list))
+		listNotificationsStage = nil
+	}
+	defer r.Body.Close()
+}
+
 
 func errorHandeler(err error) {
 	if err != nil {

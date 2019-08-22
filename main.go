@@ -33,9 +33,11 @@ func main() {
 	http.HandleFunc("/savenotification", saveNotifications)
 	http.HandleFunc("/backnotification", backNotifications)
 
-	http.HandleFunc("/sheader", solidGate.SavekHeader)
-	http.HandleFunc("/bheader", solidGate.BackHeader)
+	http.HandleFunc("/saveSolidProd", solidGate.SaveSolidGateProd)
+	http.HandleFunc("/backSolidProd", solidGate.BackSolidGateProd)
 
+	http.HandleFunc("/saveSolidStage", solidGate.SaveSolidGateStage)
+	http.HandleFunc("/backSolidStage", solidGate.BackSolidGateStage)
 
 	err := http.ListenAndServe(":9099", nil)
 
@@ -163,7 +165,6 @@ func showNotification(w http.ResponseWriter, req *http.Request) {
 	io.WriteString(w, str)
 }
 
-
 func saveNotifications(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		w.WriteHeader(http.StatusOK)
@@ -188,7 +189,6 @@ func saveNotifications(w http.ResponseWriter, r *http.Request) {
 	}
 	defer r.Body.Close()
 }
-
 
 func backNotifications(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
