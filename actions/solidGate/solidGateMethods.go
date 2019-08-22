@@ -54,7 +54,7 @@ func SavekHeader(w http.ResponseWriter, r *http.Request) {
 		header := r.Header
 
 		for v := range header {
-			tempList = append(tempList, v)
+			tempList = append(tempList, header.Get(v))
 		}
 
 	}
