@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/vladgoncharenko/notifier/actions/gate"
 	"github.com/vladgoncharenko/notifier/actions/solidGate"
+	"github.com/vladgoncharenko/notifier/actions/vmpi"
 	"github.com/vladgoncharenko/notifier/models"
 	"io"
 	"io/ioutil"
@@ -38,6 +39,7 @@ func main() {
 	http.HandleFunc("/saveSolid", solidGate.SaveSolidGateProd)
 	http.HandleFunc("/backSolid", solidGate.BackSolidGateProd)
 
+	http.HandleFunc("/empty", vmpi.Empty)
 
 	err := http.ListenAndServe(":9099", nil)
 
