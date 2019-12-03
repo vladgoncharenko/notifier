@@ -31,6 +31,7 @@ func main() {
 	http.HandleFunc("/delay", delayRequest)
 	http.HandleFunc("/delay11", delayEleven)
 	http.HandleFunc("/notification", notification)
+	http.HandleFunc("/notificationH", notificationHeader)
 	http.HandleFunc("/shownotification", showNotification)
 
 	http.HandleFunc("/savenotification", gate.SaveNotifications)
@@ -147,6 +148,27 @@ func notification(w http.ResponseWriter, r *http.Request) {
 			notificationToShow = nil
 		}
 		notificationToShow = append(notificationToShow, string(body))
+		w.Write([]byte("{\"status\":\"ok\"}"))
+	}
+	defer r.Body.Close()
+}
+
+func notificationHeader(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "POST" {
+		w.WriteHeader(http.StatusOK)
+		body, err := ioutil.ReadAll(r.Body)
+		header := r.Header
+		log.Println(string(body))
+		if err != nil {
+			log.Print(err)
+		}
+
+		if len(notificationToShow) > 100 {
+			notificationToShow = nil
+		}
+		notificationToShow = append(notificationToShow, header.Get("signature"))
+		notificationToShow = append(notificationToShow, string(body))
+
 		w.Write([]byte("{\"status\":\"ok\"}"))
 	}
 	defer r.Body.Close()
