@@ -1,6 +1,7 @@
 package vmpi
 
 import (
+	"github.com/vladgoncharenko/notifier/common"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -11,9 +12,7 @@ func Empty(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		body, err := ioutil.ReadAll(r.Body)
 		log.Println(string(body))
-		if err != nil {
-			log.Print(err)
-		}
+		common.ErrorHandler(err)
 		w.Write(nil)
 	}
 	defer r.Body.Close()

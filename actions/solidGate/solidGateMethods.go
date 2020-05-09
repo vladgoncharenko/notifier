@@ -2,34 +2,24 @@ package solidGate
 
 import (
 	"encoding/json"
+	"github.com/vladgoncharenko/notifier/common"
 	"io/ioutil"
-	"log"
 	"net/http"
 )
 
-var listNotifications [] interface{}
+var listNotifications []interface{}
 
 func SaveSolidGateProd(w http.ResponseWriter, r *http.Request) {
+	var notific interface{}
 	if r.Method == "POST" {
 		w.WriteHeader(http.StatusOK)
-
 		body, err := ioutil.ReadAll(r.Body)
-
-		errorHandeler(err)
-
-		if len(listNotifications) > 100 {
-			listNotifications = nil
-		}
-
-		var notific interface{}
-
+		common.ErrorHandler(err)
+		common.ClearSlice(listNotifications)
 		err = json.Unmarshal(body, &notific)
-
-		errorHandeler(err)
-
+		common.ErrorHandler(err)
 		listNotifications = append(listNotifications, notific)
-
-		w.Write([]byte("{\"status\":\"ok\"}"))
+		w.Write([]byte(common.JsonStatusOk))
 	}
 	defer r.Body.Close()
 }
@@ -38,17 +28,8 @@ func BackSolidGateProd(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		w.WriteHeader(http.StatusOK)
 		list, _ := json.Marshal(listNotifications)
-
 		w.Write([]byte(list))
 		listNotifications = nil
 	}
 	defer r.Body.Close()
-}
-
-
-
-func errorHandeler(err error) {
-	if err != nil {
-		log.Print(err)
-	}
 }
