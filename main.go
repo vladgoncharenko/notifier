@@ -6,6 +6,7 @@ import (
 	"github.com/vladgoncharenko/notifier/actions/gate"
 	"github.com/vladgoncharenko/notifier/actions/solidGate"
 	"github.com/vladgoncharenko/notifier/actions/vmpi"
+	"github.com/vladgoncharenko/notifier/common"
 	"github.com/vladgoncharenko/notifier/models"
 	"io"
 	"io/ioutil"
@@ -14,9 +15,9 @@ import (
 	"time"
 )
 
-var bodyToShow [] string
-var notificationToShow [] string
-var testNotifications [] string
+var bodyToShow []string
+var notificationToShow []string
+var testNotifications []string
 var testNotificationsTemp []models.Status
 
 type RequestData struct {
@@ -30,9 +31,9 @@ func main() {
 	http.HandleFunc("/show", show)
 	http.HandleFunc("/delay", delayRequest)
 	http.HandleFunc("/delay11", delayEleven)
-	http.HandleFunc("/notification", notification)
+	http.HandleFunc("/notification", gate.Notification)
 	http.HandleFunc("/notificationH", notificationHeader)
-	http.HandleFunc("/shownotification", showNotification)
+	http.HandleFunc("/shownotification", gate.ShowNotification)
 
 	http.HandleFunc("/savenotification", gate.SaveNotifications)
 	http.HandleFunc("/backnotification", gate.BackNotifications)
@@ -50,27 +51,21 @@ func main() {
 }
 
 func start(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "POST" {
+	if r.Method == http.MethodPost {
 		w.WriteHeader(http.StatusOK)
 		body, err := ioutil.ReadAll(r.Body)
-		log.Println(string(body))
-		if err != nil {
-			log.Print(err)
-		}
+		common.ErrorHandler(err)
 		w.Write(body)
 	}
 	defer r.Body.Close()
 }
 
 func ui(w http.ResponseWriter, r *http.Request) {
-
-	if r.Method == "POST" {
+	if r.Method == http.MethodPost {
 		w.WriteHeader(http.StatusOK)
 		body, err := ioutil.ReadAll(r.Body)
 		log.Println(string(body))
-		if err != nil {
-			log.Print(err)
-		}
+		common.ErrorHandler(err)
 		log.Println(string(body))
 		if len(bodyToShow) > 100 {
 			bodyToShow = nil
@@ -83,36 +78,25 @@ func ui(w http.ResponseWriter, r *http.Request) {
 }
 
 func show(w http.ResponseWriter, req *http.Request) {
-
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	var str string
-
 	for _, res := range bodyToShow {
 		str += "<span>" + res + "</span>" + "<p>"
 	}
 	bodyToShow = nil
-
-	fmt.Println(str)
-
 	w.WriteHeader(http.StatusOK)
 	io.WriteString(w, str)
 }
 
 func delayRequest(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "POST" {
+	if r.Method == http.MethodPost {
 		w.WriteHeader(http.StatusOK)
 		body, err := ioutil.ReadAll(r.Body)
 		d := &RequestData{}
 		err = json.Unmarshal(body, &d)
-
-		if err != nil {
-			log.Print(err)
-		}
+		common.ErrorHandler(err)
 		log.Println(string(body))
-		if err != nil {
-			log.Print(err)
-		}
-
+		common.ErrorHandler(err)
 		if d.Delay > 0 {
 			time.Sleep(time.Duration(d.Delay) * time.Second)
 		}
@@ -122,112 +106,29 @@ func delayRequest(w http.ResponseWriter, r *http.Request) {
 }
 
 func delayEleven(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "POST" {
+	if r.Method == http.MethodPost {
 		w.WriteHeader(http.StatusOK)
 		body, err := ioutil.ReadAll(r.Body)
-		log.Println(string(body))
-		if err != nil {
-			log.Print(err)
-		}
+		common.ErrorHandler(err)
 		time.Sleep(11 * time.Second)
 		w.Write(body)
 	}
 	defer r.Body.Close()
 }
 
-func notification(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "POST" {
-		w.WriteHeader(http.StatusOK)
-		body, err := ioutil.ReadAll(r.Body)
-		log.Println(string(body))
-		if err != nil {
-			log.Print(err)
-		}
-
-		if len(notificationToShow) > 100 {
-			notificationToShow = nil
-		}
-		notificationToShow = append(notificationToShow, string(body))
-		w.Write([]byte("{\"status\":\"ok\"}"))
-	}
-	defer r.Body.Close()
-}
-
 func notificationHeader(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "POST" {
+	if r.Method == http.MethodPost {
 		w.WriteHeader(http.StatusOK)
 		body, err := ioutil.ReadAll(r.Body)
 		header := r.Header
-		log.Println(string(body))
-		if err != nil {
-			log.Print(err)
-		}
-
+		common.ErrorHandler(err)
 		if len(notificationToShow) > 100 {
 			notificationToShow = nil
 		}
 		notificationToShow = append(notificationToShow, header.Get("signature"))
 		notificationToShow = append(notificationToShow, string(body))
 
-		w.Write([]byte("{\"status\":\"ok\"}"))
+		w.Write([]byte(common.JsonStatusOk))
 	}
 	defer r.Body.Close()
-}
-
-func showNotification(w http.ResponseWriter, req *http.Request) {
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	var str string
-
-	for _, res := range notificationToShow {
-		str += "<span>" + res + "</span>" + "<p>"
-	}
-	bodyToShow = nil
-	notificationToShow = nil
-	fmt.Println(str)
-
-	w.WriteHeader(http.StatusOK)
-	io.WriteString(w, str)
-}
-
-func saveNotifications(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "POST" {
-		w.WriteHeader(http.StatusOK)
-
-		body, err := ioutil.ReadAll(r.Body)
-
-		errorHandeler(err)
-
-		if len(testNotificationsTemp) > 100 {
-			testNotificationsTemp = nil
-		}
-
-		notific := &models.Status{}
-
-		err = json.Unmarshal(body, &notific)
-
-		errorHandeler(err)
-
-		testNotificationsTemp = append(testNotificationsTemp, *notific)
-
-		w.Write([]byte("{\"status\":\"ok\"}"))
-	}
-	defer r.Body.Close()
-}
-
-func backNotifications(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "POST" {
-		w.WriteHeader(http.StatusOK)
-		w.Header().Add("content", "")
-		list, _ := json.Marshal(testNotificationsTemp)
-
-		w.Write([]byte(list))
-		testNotificationsTemp = nil
-	}
-	defer r.Body.Close()
-}
-
-func errorHandeler(err error) {
-	if err != nil {
-		log.Print(err)
-	}
 }
