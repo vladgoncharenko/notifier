@@ -11,6 +11,7 @@ import (
 )
 
 var notificationGate []interface{}
+var notificationToShow []interface{}
 
 func SaveNotifications(w http.ResponseWriter, r *http.Request) {
 	var notific interface{}
@@ -46,9 +47,9 @@ func Notification(w http.ResponseWriter, r *http.Request) {
 		body, err := ioutil.ReadAll(r.Body)
 
 		common.ErrorHandler(err)
-		common.ClearSlice(notificationGate)
+		common.ClearSlice(notificationToShow)
 
-		notificationGate = append(notificationGate, string(body))
+		notificationToShow = append(notificationToShow, string(body))
 		w.Write([]byte(common.JsonStatusOk))
 	}
 	defer r.Body.Close()
@@ -58,7 +59,7 @@ func ShowNotification(w http.ResponseWriter, req *http.Request) {
 	if req.Method == http.MethodGet {
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		var str string
-		for i, res := range notificationGate {
+		for i, res := range notificationToShow {
 			str += "<span>" + "_______________________________________________________________" + "</span>" + "<p>"
 			str += "<span>" + strconv.Itoa(i+1) + ")" + fmt.Sprint(res) + "</span>" + "<p>"
 			str += "<span>" + "_______________________________________________________________" + "</span>" + "<p>"
@@ -67,4 +68,19 @@ func ShowNotification(w http.ResponseWriter, req *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		io.WriteString(w, str)
 	}
+}
+
+func NotificationHeader(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodPost {
+		w.WriteHeader(http.StatusOK)
+		body, err := ioutil.ReadAll(r.Body)
+		header := r.Header
+		common.ErrorHandler(err)
+		common.ClearSlice(notificationToShow)
+		notificationToShow = append(notificationToShow, header.Get("signature"))
+		notificationToShow = append(notificationToShow, string(body))
+
+		w.Write([]byte(common.JsonStatusOk))
+	}
+	defer r.Body.Close()
 }
