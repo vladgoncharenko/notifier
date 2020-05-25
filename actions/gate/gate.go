@@ -16,6 +16,7 @@ var notificationToShow []interface{}
 func SaveNotifications(w http.ResponseWriter, r *http.Request) {
 	var notific interface{}
 	if r.Method == http.MethodPost {
+		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		body, err := ioutil.ReadAll(r.Body)
 		common.ErrorHandler(err)
@@ -32,7 +33,7 @@ func SaveNotifications(w http.ResponseWriter, r *http.Request) {
 func BackNotifications(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPost {
 		w.WriteHeader(http.StatusOK)
-		w.Header().Add("content", "")
+		w.Header().Add("Content-Type", "application/json")
 		list, _ := json.Marshal(notificationGate)
 
 		w.Write([]byte(list))
