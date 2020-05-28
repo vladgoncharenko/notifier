@@ -41,7 +41,9 @@ func main() {
 	http.HandleFunc("/saveSolid", solidGate.SaveSolidGateProd)
 	http.HandleFunc("/backSolid", solidGate.BackSolidGateProd)
 
+	//VMPI
 	http.HandleFunc("/empty", vmpi.Empty)
+	http.HandleFunc("/vmpiResponseAsMerchant", vmpi.VmpiResp)
 
 	err := http.ListenAndServe(":9099", nil)
 
