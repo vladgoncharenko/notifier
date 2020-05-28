@@ -26,8 +26,9 @@ type ResponseData struct {
 }
 
 type VmpiRequest struct {
-	AlertId        string `json:"alertId"`
-	*RequestHeader `json:"requestHeader"`
+	AlertId       string `json:"alertId"`
+	RequestHeader `json:"requestHeader"`
+	RequestData   `json:"requestData"`
 }
 
 type RequestHeader struct {
@@ -35,40 +36,47 @@ type RequestHeader struct {
 	CallType []string `json:"callType"`
 }
 
+type RequestData struct {
+	TransactionAmount `json:"transactionAmount"`
+}
+
+type TransactionAmount struct {
+	Currency string `json:"currency"`
+	Value    string `json:"value"`
+}
+
 func (r *VmpiRequest) GetResponseForVmpi() ResponseAsVmpiClient {
-	for _, v := range r.CallType {
-		switch v {
-		case "1":
-			return ResponseAsVmpiClient{ResponseData{
-				FraudReportNotificationResponse: DistributionCanceled,
-				SystemFraudReport:               DistributionCanceledMessage,
-			}}
-		case "2":
-			return ResponseAsVmpiClient{ResponseData{
-				FraudReportNotificationResponse: FraudReportGoodsDispatchedAndInTransit,
-				SystemFraudReport:               FraudReportGoodsDispatchedAndInTransitMessage,
-			}}
-		case "3":
-			return ResponseAsVmpiClient{ResponseData{
-				FraudReportNotificationResponse: FraudReportServiceNowCancelled,
-				SystemFraudReport:               FraudReportServiceNowCancelledMessage,
-			}}
-		case "4":
-			return ResponseAsVmpiClient{ResponseData{
-				FraudReportNotificationResponse: FraudReportServiceRedeemed,
-				SystemFraudReport:               FraudReportServiceRedeemedMessage,
-			}}
-		case "5":
-			return ResponseAsVmpiClient{ResponseData{
-				FraudReportNotificationResponse: FraudReportAcknowledged,
-				SystemFraudReport:               FraudReportAcknowledgedMessage,
-			}}
-		case "6":
-			return ResponseAsVmpiClient{ResponseData{
-				FraudReportNotificationResponse: FraudReportTransactionReversed,
-				SystemFraudReport:               FraudReportTransactionReversedMessage,
-			}}
-		}
+	switch r.RequestData.TransactionAmount.Value {
+	case "1.00":
+		return ResponseAsVmpiClient{ResponseData{
+			FraudReportNotificationResponse: DistributionCanceled,
+			SystemFraudReport:               DistributionCanceledMessage,
+		}}
+	case "2.00":
+		return ResponseAsVmpiClient{ResponseData{
+			FraudReportNotificationResponse: FraudReportGoodsDispatchedAndInTransit,
+			SystemFraudReport:               FraudReportGoodsDispatchedAndInTransitMessage,
+		}}
+	case "3.00":
+		return ResponseAsVmpiClient{ResponseData{
+			FraudReportNotificationResponse: FraudReportServiceNowCancelled,
+			SystemFraudReport:               FraudReportServiceNowCancelledMessage,
+		}}
+	case "4.00":
+		return ResponseAsVmpiClient{ResponseData{
+			FraudReportNotificationResponse: FraudReportServiceRedeemed,
+			SystemFraudReport:               FraudReportServiceRedeemedMessage,
+		}}
+	case "5.00":
+		return ResponseAsVmpiClient{ResponseData{
+			FraudReportNotificationResponse: FraudReportAcknowledged,
+			SystemFraudReport:               FraudReportAcknowledgedMessage,
+		}}
+	case "6.00":
+		return ResponseAsVmpiClient{ResponseData{
+			FraudReportNotificationResponse: FraudReportTransactionReversed,
+			SystemFraudReport:               FraudReportTransactionReversedMessage,
+		}}
 	}
 	return ResponseAsVmpiClient{ResponseData{
 		FraudReportNotificationResponse: FraudReportError,
