@@ -44,6 +44,7 @@ func main() {
 	//VMPI
 	http.HandleFunc("/empty", vmpi.Empty)
 	http.HandleFunc("/vmpiResponseAsMerchant", vmpi.VmpiResp)
+	http.HandleFunc("/vmpiCheckRequestFromVisa", vmpi.VmpiCheckRequestFromVisa)
 
 	err := http.ListenAndServe(":9099", nil)
 

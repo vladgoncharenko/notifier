@@ -33,3 +33,18 @@ func VmpiResp(w http.ResponseWriter, r *http.Request) {
 	}
 	defer r.Body.Close()
 }
+
+func VmpiCheckRequestFromVisa(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodPost {
+		var visaRequest interface{}
+		var responseAsClient models.ResponseAsVmpiClient
+		w.WriteHeader(http.StatusOK)
+		body, err := ioutil.ReadAll(r.Body)
+		err = json.Unmarshal(body, &visaRequest)
+		common.ErrorHandler(err)
+		responseAsClient.AddVisaRequest(visaRequest)
+		data, _ := json.Marshal(responseAsClient)
+		w.Write(data)
+	}
+	defer r.Body.Close()
+}

@@ -23,6 +23,25 @@ type ResponseAsVmpiClient struct {
 type ResponseData struct {
 	FraudReportNotificationResponse int    `json:"fraudReportNoticationResponse,omitempty"`
 	SystemFraudReport               string `json:"systemFraudReport,omitempty"`
+	PurchaseInformationResponseData `json:"purchaseInformationResponseData"`
+}
+
+type PurchaseInformationResponseData struct {
+	MerchantReferenceNumber string      `json:"merchantReferenceNumber"`
+	AssuredCredit           bool        `json:"assuredCredit"`
+	AuthenticationConducted string      `json:"authenticationConducted"`
+	CustomerName            string      `json:"customerName"`
+	SpecialInstructions     interface{} `json:"specialInstructions"`
+	CreditInquiryResponse   `json:"creditInquiryResponse"`
+}
+
+type CreditInquiryResponse struct {
+	CreditAmount `json:"creditAmount"`
+}
+
+type CreditAmount struct {
+	Value    int    `json:"value"`
+	Currency string `json:"currency"`
 }
 
 type VmpiRequest struct {
@@ -43,6 +62,12 @@ type RequestData struct {
 type TransactionAmount struct {
 	Currency string `json:"currency"`
 	Value    string `json:"value"`
+}
+
+func (r *ResponseAsVmpiClient) AddVisaRequest(data interface{}) {
+	r.FraudReportNotificationResponse = 6
+	r.SystemFraudReport = "transaction-reversed"
+	r.PurchaseInformationResponseData.SpecialInstructions = data
 }
 
 func (r *VmpiRequest) GetResponseForVmpi() ResponseAsVmpiClient {
