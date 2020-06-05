@@ -27,11 +27,11 @@ type ResponseData struct {
 }
 
 type PurchaseInformationResponseData struct {
-	MerchantReferenceNumber string      `json:"merchantReferenceNumber"`
-	AssuredCredit           bool        `json:"assuredCredit"`
-	AuthenticationConducted string      `json:"authenticationConducted"`
-	CustomerName            string      `json:"customerName"`
-	SpecialInstructions     interface{} `json:"specialInstructions"`
+	MerchantReferenceNumber string `json:"merchantReferenceNumber"`
+	AssuredCredit           bool   `json:"assuredCredit"`
+	AuthenticationConducted string `json:"authenticationConducted"`
+	CustomerName            string `json:"customerName"`
+	SpecialInstructions     string `json:"specialInstructions"`
 	CreditInquiryResponse   `json:"creditInquiryResponse"`
 }
 
@@ -64,7 +64,7 @@ type TransactionAmount struct {
 	Value    string `json:"value"`
 }
 
-func (r *ResponseAsVmpiClient) AddVisaRequest(data interface{}) {
+func (r *ResponseAsVmpiClient) AddVisaRequest(data string) {
 	r.FraudReportNotificationResponse = 6
 	r.SystemFraudReport = "transaction-reversed"
 	r.PurchaseInformationResponseData.SpecialInstructions = data
