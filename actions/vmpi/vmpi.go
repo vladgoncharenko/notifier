@@ -36,14 +36,12 @@ func VmpiResp(w http.ResponseWriter, r *http.Request) {
 
 func VmpiCheckRequestFromVisa(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPost {
-		var visaRequest string
 		var responseAsClient models.ResponseAsVmpiClient
 		w.WriteHeader(http.StatusOK)
 		w.Header().Set("Content-Type", "application/json")
 		body, err := ioutil.ReadAll(r.Body)
-		err = json.Unmarshal(body, &visaRequest)
 		common.ErrorHandler(err)
-		responseAsClient.AddVisaRequest(visaRequest)
+		responseAsClient.AddVisaRequest(string(body))
 		data, _ := json.Marshal(responseAsClient)
 		w.Write(data)
 	}
