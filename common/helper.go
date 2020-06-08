@@ -11,7 +11,7 @@ func ErrorHandler(err error) {
 }
 
 func ClearSlice(slice *[]interface{}) {
-	if len(*slice) > 10 {
+	if len(*slice) > 40 {
 		*slice = nil
 	}
 
