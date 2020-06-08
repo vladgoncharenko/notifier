@@ -20,7 +20,7 @@ func SaveNotifications(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		body, err := ioutil.ReadAll(r.Body)
 		common.ErrorHandler(err)
-		common.ClearSlice(notificationGate)
+		common.ClearSlice(&notificationGate)
 		err = json.Unmarshal(body, &notific)
 		common.ErrorHandler(err)
 		notificationGate = append(notificationGate, notific)
@@ -48,7 +48,7 @@ func Notification(w http.ResponseWriter, r *http.Request) {
 		body, err := ioutil.ReadAll(r.Body)
 
 		common.ErrorHandler(err)
-		common.ClearSlice(notificationToShow)
+		common.ClearSlice(&notificationToShow)
 
 		notificationToShow = append(notificationToShow, string(body))
 		w.Write([]byte(common.JsonStatusOk))
@@ -65,7 +65,7 @@ func ShowNotification(w http.ResponseWriter, req *http.Request) {
 			str += "<span>" + strconv.Itoa(i+1) + ")" + fmt.Sprint(res) + "</span>" + "<p>"
 			str += "<span>" + "_______________________________________________________________" + "</span>" + "<p>"
 		}
-		notificationGate = nil
+		notificationToShow = nil
 		w.WriteHeader(http.StatusOK)
 		io.WriteString(w, str)
 	}
@@ -77,7 +77,7 @@ func NotificationHeader(w http.ResponseWriter, r *http.Request) {
 		body, err := ioutil.ReadAll(r.Body)
 		header := r.Header
 		common.ErrorHandler(err)
-		common.ClearSlice(notificationToShow)
+		common.ClearSlice(&notificationToShow)
 		notificationToShow = append(notificationToShow, header.Get("signature"))
 		notificationToShow = append(notificationToShow, string(body))
 

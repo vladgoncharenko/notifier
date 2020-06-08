@@ -1,6 +1,8 @@
 package common
 
-import "log"
+import (
+	"log"
+)
 
 func ErrorHandler(err error) {
 	if err != nil {
@@ -8,9 +10,9 @@ func ErrorHandler(err error) {
 	}
 }
 
-func ClearSlice(slice []interface{}) {
-	if len(slice) > 40 {
-		slice = nil
+func ClearSlice(slice *[]interface{}) {
+	if len(*slice) > 10 {
+		*slice = nil
 	}
 
 }

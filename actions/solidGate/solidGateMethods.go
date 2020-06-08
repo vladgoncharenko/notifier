@@ -15,7 +15,7 @@ func SaveSolidGateProd(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		body, err := ioutil.ReadAll(r.Body)
 		common.ErrorHandler(err)
-		common.ClearSlice(listNotifications)
+		common.ClearSlice(&listNotifications)
 		err = json.Unmarshal(body, &notific)
 		common.ErrorHandler(err)
 		listNotifications = append(listNotifications, notific)
