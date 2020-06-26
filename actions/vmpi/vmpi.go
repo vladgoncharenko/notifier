@@ -27,7 +27,7 @@ func VmpiResp(w http.ResponseWriter, r *http.Request) {
 		var requestFromVmpi models.VmpiRequest
 		err = json.Unmarshal(body, &requestFromVmpi)
 		common.ErrorHandler(err)
-		response := requestFromVmpi.GetResponseForVmpi()
+		response := requestFromVmpi.GetResponseForVmpiByAmount()
 		data, _ := json.Marshal(response)
 		w.Write(data)
 	}
@@ -46,4 +46,24 @@ func VmpiCheckRequestFromVisa(w http.ResponseWriter, r *http.Request) {
 		w.Write(data)
 	}
 	defer r.Body.Close()
+}
+
+func VmpiResponseExtended(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	defer r.Body.Close()
+
+	body, err := ioutil.ReadAll(r.Body)
+	var requestFromVmpi models.VmpiRequest
+	err = json.Unmarshal(body, &requestFromVmpi)
+	common.ErrorHandler(err)
+	response := requestFromVmpi.GetResponseForVmpiByTransactionId()
+	data, err := json.Marshal(response)
+	common.ErrorHandler(err)
+	_, err = w.Write(data)
+	common.ErrorHandler(err)
 }

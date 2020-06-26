@@ -27,21 +27,77 @@ type ResponseData struct {
 }
 
 type PurchaseInformationResponseData struct {
-	MerchantReferenceNumber string `json:"merchantReferenceNumber"`
-	AssuredCredit           bool   `json:"assuredCredit"`
-	AuthenticationConducted string `json:"authenticationConducted"`
-	CustomerName            string `json:"customerName"`
-	SpecialInstructions     string `json:"specialInstructions"`
-	CreditInquiryResponse   `json:"creditInquiryResponse"`
+	MerchantReferenceNumber      string `json:"merchantReferenceNumber,omitempty"`
+	AssuredCredit                bool   `json:"assuredCredit,omitempty"`
+	AuthenticationConducted      string `json:"authenticationConducted,omitempty"`
+	CustomerName                 string `json:"customerName,omitempty"`
+	SpecialInstructions          string `json:"specialInstructions,omitempty"`
+	EmailAccount                 string `json:"emailAccount,omitempty"`
+	CancellationPolicy           string `json:"cancellationPolicy,omitempty"`
+	WebsiteLink                  string `json:"websiteLink,omitempty"`
+	CardCVV2ValidationAtPurchase bool   `json:"cardCVV2ValidationAtPurchase,omitempty"`
+	DeviceName                   string `json:"deviceName"`
+	DeviceId                     string `json:"deviceId"`
+	DeviceIpAddress              string `json:"deviceIpAddress"`
+	Communications               string `json:"communications"`
+	MonthsSinceFirstPurchase     int    `json:"monthsSinceFirstPurchase"`
+	LinkToItemSold               string `json:"linkToItemSold,omitempty"`
+
+	CreditInquiryResponse `json:"creditInquiryResponse,omitempty"`
+	DigitalReceipt        `json:"digitalReceipt,omitempty"`
+}
+
+type DigitalReceipt struct {
+	OrderNumber               interface{}        `json:"orderNumber,omitempty"`
+	OrderTotal                Amount             `json:"orderTotal,omitempty"`
+	Tax                       Amount             `json:"tax,omitempty"`
+	PaymentInformation        PaymentInformation `json:"paymentInformation,omitempty"`
+	OrderDateTime             interface{}        `json:"orderDateTime,omitempty"`
+	ShippingAndHandlingCharge Amount             `json:"shippingAndHandlingCharge,omitempty"`
+	TitlesIncludedInOrder     string             `json:"titlesIncludedInOrder,omitempty"`
+	OrderDetails              OrderDetails       `json:"orderDetails,omitempty"`
+	InvoiceNumber             string             `json:"invoiceNumber,omitempty"`
+	SubTotal                  Amount             `json:"subTotal,omitempty"`
+}
+
+type PaymentInformation struct {
+	ItemsSubTotal  Amount        `json:"itemsSubTotal,omitempty"`
+	Tax            Amount        `json:"tax,omitempty"`
+	BillingAddress *AddressModel `json:"billingAddress,omitempty"`
+	Total          Amount        `json:"total,omitempty"`
+	PaymentMethod  string        `json:"paymentMethod,omitempty"`
+}
+
+type OrderDetails struct {
+	Item []Item `json:"item,omitempty"`
+}
+
+type Amount struct {
+	Value    float64 `json:"value,omitempty"`
+	Currency string  `json:"currency,omitempty"`
+}
+
+type Item struct {
+	ItemType        string `json:"itemType,omitempty"`
+	Price           Amount `json:"price,omitempty"`
+	ItemDescription string `json:"itemDescription,omitempty"`
+	ShippingInfo    string `json:"shippingInfo,omitempty"`
+	ArtistOrSeller  string `json:"artistOrSeller,omitempty"`
+	Quantity        int    `json:"quantity,omitempty"`
+}
+
+type AddressModel struct {
+	City          string `json:"city,omitempty"`
+	SubEntityCode string `json:"subEntityCode,omitempty"`
+	Address1      string `json:"address1,omitempty"`
+	Address2      string `json:"address2,omitempty"`
+	State         string `json:"state,omitempty"`
+	Country       string `json:"country,omitempty"`
+	PostalCode    string `json:"postalCode,omitempty"`
 }
 
 type CreditInquiryResponse struct {
-	CreditAmount `json:"creditAmount"`
-}
-
-type CreditAmount struct {
-	Value    int    `json:"value"`
-	Currency string `json:"currency"`
+	Amount `json:"creditAmount"`
 }
 
 type VmpiRequest struct {
@@ -57,6 +113,7 @@ type RequestHeader struct {
 
 type RequestData struct {
 	TransactionAmount `json:"transactionAmount"`
+	TransactionId     string `json:"transactionId"`
 }
 
 type TransactionAmount struct {
@@ -70,7 +127,7 @@ func (r *ResponseAsVmpiClient) AddVisaRequest(data string) {
 	r.PurchaseInformationResponseData.SpecialInstructions = data
 }
 
-func (r *VmpiRequest) GetResponseForVmpi() ResponseAsVmpiClient {
+func (r *VmpiRequest) GetResponseForVmpiByAmount() ResponseAsVmpiClient {
 	switch r.RequestData.TransactionAmount.Value {
 	case "1.00":
 		return ResponseAsVmpiClient{ResponseData{
@@ -103,6 +160,56 @@ func (r *VmpiRequest) GetResponseForVmpi() ResponseAsVmpiClient {
 			SystemFraudReport:               FraudReportTransactionReversedMessage,
 		}}
 	}
+	return ResponseAsVmpiClient{ResponseData{
+		FraudReportNotificationResponse: FraudReportError,
+		SystemFraudReport:               FraudReportErrorMessageMessage,
+	}}
+}
+
+func (r *VmpiRequest) GetResponseForVmpiByTransactionId() ResponseAsVmpiClient {
+	switch r.RequestData.TransactionId {
+	case "0000000000001":
+		return ResponseAsVmpiClient{ResponseData{
+			FraudReportNotificationResponse: FraudReportTransactionReversed,
+			SystemFraudReport:               FraudReportTransactionReversedMessage,
+			PurchaseInformationResponseData: PurchaseInformationResponseData{
+				EmailAccount:                 "betterman@gmail.com",
+				MerchantReferenceNumber:      "wer3424r",
+				CancellationPolicy:           "https://betterme-apps.com/en",
+				WebsiteLink:                  "https://betterme-apps.com/en",
+				CardCVV2ValidationAtPurchase: true,
+				DeviceName:                   "iphone se alex",
+				DeviceId:                     "f4134f1234234f3",
+				DeviceIpAddress:              "8.8.8.8",
+				Communications:               "Support gave a feedback and refund provided",
+				MonthsSinceFirstPurchase:     5,
+				LinkToItemSold:               "https://betterme-apps.com/en",
+				DigitalReceipt: DigitalReceipt{
+					OrderTotal: Amount{
+						Value:    20.20,
+						Currency: "840",
+					},
+					OrderDateTime:         "2020-06-23T13:33:29",
+					TitlesIncludedInOrder: "Meal plan for 7 weeks",
+					PaymentInformation: PaymentInformation{
+						PaymentMethod: "Card 5432",
+					},
+					OrderDetails: OrderDetails{
+						Item: []Item{
+							{
+								Quantity: 0,
+								Price: Amount{
+									Value:    20.20,
+									Currency: "840",
+								},
+							},
+						},
+					},
+				},
+			},
+		}}
+	}
+
 	return ResponseAsVmpiClient{ResponseData{
 		FraudReportNotificationResponse: FraudReportError,
 		SystemFraudReport:               FraudReportErrorMessageMessage,
