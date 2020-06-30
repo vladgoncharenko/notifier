@@ -168,7 +168,11 @@ func (r *VmpiRequest) GetResponseForVmpiByAmount() ResponseAsVmpiClient {
 
 func (r *VmpiRequest) GetResponseForVmpiByTransactionId() ResponseAsVmpiClient {
 	switch r.RequestData.TransactionId {
-	case "0000000000001":
+	case "20200617171013602256":
+		fallthrough
+	case "11111111111111111111":
+		fallthrough
+	case "00000000000000000001":
 		return ResponseAsVmpiClient{ResponseData{
 			FraudReportNotificationResponse: FraudReportTransactionReversed,
 			SystemFraudReport:               FraudReportTransactionReversedMessage,
