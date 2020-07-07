@@ -10,6 +10,7 @@ import (
 )
 
 func Empty(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 	if r.Method == http.MethodPost {
 		w.WriteHeader(http.StatusOK)
 		body, err := ioutil.ReadAll(r.Body)
@@ -21,9 +22,9 @@ func Empty(w http.ResponseWriter, r *http.Request) {
 }
 
 func VmpiResp(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 	if r.Method == http.MethodPost {
 		w.WriteHeader(http.StatusOK)
-		w.Header().Set("Content-Type", "application/json")
 		body, err := ioutil.ReadAll(r.Body)
 		var requestFromVmpi models.VmpiRequest
 		err = json.Unmarshal(body, &requestFromVmpi)
@@ -36,10 +37,10 @@ func VmpiResp(w http.ResponseWriter, r *http.Request) {
 }
 
 func VmpiCheckRequestFromVisa(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 	if r.Method == http.MethodPost {
 		var responseAsClient models.ResponseAsVmpiClient
 		w.WriteHeader(http.StatusOK)
-		w.Header().Set("Content-Type", "application/json")
 		body, err := ioutil.ReadAll(r.Body)
 		common.ErrorHandler(err)
 		responseAsClient.AddVisaRequest(string(body))
@@ -50,13 +51,13 @@ func VmpiCheckRequestFromVisa(w http.ResponseWriter, r *http.Request) {
 }
 
 func VmpiResponseExtended(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 	if r.Method != http.MethodPost {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		return
 	}
 
 	w.WriteHeader(http.StatusOK)
-	w.Header().Set("Content-Type", "application/json")
 	defer r.Body.Close()
 
 	body, err := ioutil.ReadAll(r.Body)
