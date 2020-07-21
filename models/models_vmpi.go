@@ -169,9 +169,88 @@ func (r *VmpiRequest) GetResponseForVmpiByAmount() ResponseAsVmpiClient {
 func (r *VmpiRequest) GetResponseForVmpiByTransactionId() ResponseAsVmpiClient {
 	switch r.RequestData.TransactionId {
 	case "20200617171013602256":
-		fallthrough
+		return ResponseAsVmpiClient{ResponseData{
+			FraudReportNotificationResponse: FraudReportTransactionReversed,
+			SystemFraudReport:               FraudReportTransactionReversedMessage,
+			PurchaseInformationResponseData: PurchaseInformationResponseData{
+				EmailAccount:                 "byron.wallis@test.com",
+				MerchantReferenceNumber:      "19532887",
+				CancellationPolicy:           "https://payproglobal.com/",
+				WebsiteLink:                  "https://payproglobal.com/",
+				CardCVV2ValidationAtPurchase: true,
+				DeviceName:                   "iphone x",
+				DeviceId:                     "g35hy4h467",
+				DeviceIpAddress:              "37.172.47.213",
+				LinkToItemSold:               "https://payproglobal.com/",
+				CustomerName:                 "byron wallis",
+				DigitalReceipt: DigitalReceipt{
+					OrderTotal: Amount{
+						Value:    45.77,
+						Currency: "840",
+					},
+					Tax: Amount{
+						Value:    7.63,
+						Currency: "840",
+					},
+					OrderDateTime:         "2020-05-28T11:34:10.63",
+					TitlesIncludedInOrder: "PC Privacy Shield",
+					PaymentInformation: PaymentInformation{
+						PaymentMethod: "Card 4111",
+					},
+					OrderDetails: OrderDetails{
+						Item: []Item{
+							{
+								Quantity: 1,
+								Price: Amount{
+									Value:    38.14,
+									Currency: "840",
+								},
+							},
+						},
+					},
+				},
+			},
+		}}
 	case "11111111111111111111":
-		fallthrough
+		return ResponseAsVmpiClient{ResponseData{
+			FraudReportNotificationResponse: FraudReportTransactionReversed,
+			SystemFraudReport:               FraudReportTransactionReversedMessage,
+			PurchaseInformationResponseData: PurchaseInformationResponseData{
+				EmailAccount:                 "cristian.mustea10@test.com",
+				MerchantReferenceNumber:      "53349599329239481",
+				CancellationPolicy:           "https://bananame.club/",
+				WebsiteLink:                  "https://bananame.club/",
+				CardCVV2ValidationAtPurchase: true,
+				DeviceName:                   "redmi 8pro",
+				DeviceId:                     "k8l798kim",
+				DeviceIpAddress:              "77.100.203.146",
+				MonthsSinceFirstPurchase:     1,
+				LinkToItemSold:               "https://bananame.club/",
+				CustomerName:                 "Cristian Mustea",
+				DigitalReceipt: DigitalReceipt{
+					OrderTotal: Amount{
+						Value:    44.99,
+						Currency: "840",
+					},
+					OrderDateTime:         "2020-05-25T00:01:11",
+					TitlesIncludedInOrder: "Premium package 53349599329239481",
+					PaymentInformation: PaymentInformation{
+						PaymentMethod: "Card 4141",
+					},
+					OrderDetails: OrderDetails{
+						Item: []Item{
+							{
+								Quantity: 1,
+								Price: Amount{
+									Value:    44.99,
+									Currency: "840",
+								},
+							},
+						},
+					},
+				},
+			},
+		}}
 	case "00000000000000000001":
 		return ResponseAsVmpiClient{ResponseData{
 			FraudReportNotificationResponse: FraudReportTransactionReversed,
@@ -188,6 +267,7 @@ func (r *VmpiRequest) GetResponseForVmpiByTransactionId() ResponseAsVmpiClient {
 				Communications:               "Support gave a feedback and refund provided",
 				MonthsSinceFirstPurchase:     5,
 				LinkToItemSold:               "https://betterme-apps.com/en",
+				CustomerName:                 "Alex Surovskii",
 				DigitalReceipt: DigitalReceipt{
 					OrderTotal: Amount{
 						Value:    20.20,
@@ -201,7 +281,7 @@ func (r *VmpiRequest) GetResponseForVmpiByTransactionId() ResponseAsVmpiClient {
 					OrderDetails: OrderDetails{
 						Item: []Item{
 							{
-								Quantity: 0,
+								Quantity: 1,
 								Price: Amount{
 									Value:    20.20,
 									Currency: "840",
