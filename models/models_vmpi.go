@@ -162,7 +162,7 @@ func (r *VmpiRequest) GetResponseForVmpiByAmount() ResponseAsVmpiClient {
 	case "7.00":
 		return ResponseAsVmpiClient{ResponseData{
 			FraudReportNotificationResponse: FraudReportTransactionReversed,
-			SystemFraudReport:               nil,
+			SystemFraudReport:               "",
 		}}
 	}
 	return ResponseAsVmpiClient{ResponseData{
