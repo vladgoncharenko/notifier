@@ -164,6 +164,23 @@ func (r *VmpiRequest) GetResponseForVmpiByAmount() ResponseAsVmpiClient {
 			FraudReportNotificationResponse: FraudReportTransactionReversed,
 			SystemFraudReport:               "",
 		}}
+	case "8.00":
+		return ResponseAsVmpiClient{ResponseData{
+			FraudReportNotificationResponse: FraudReportTransactionReversed,
+			SystemFraudReport:               FraudReportTransactionReversedMessage,
+			PurchaseInformationResponseData: PurchaseInformationResponseData{
+				DigitalReceipt: DigitalReceipt{
+					OrderTotal: Amount{
+						Value:    8.00,
+						Currency: "840",
+					},
+					Tax: Amount{
+						Value:    8.00,
+						Currency: "840",
+					},
+				},
+			},
+		}}
 	}
 	return ResponseAsVmpiClient{ResponseData{
 		FraudReportNotificationResponse: FraudReportError,
