@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/gorilla/mux"
 	"github.com/vladgoncharenko/notifier/actions/gate"
 	"github.com/vladgoncharenko/notifier/actions/solidGate"
 	"github.com/vladgoncharenko/notifier/actions/vmpi"
@@ -26,28 +27,32 @@ type RequestData struct {
 }
 
 func main() {
-	http.HandleFunc("/", start)
-	http.HandleFunc("/ui", ui)
-	http.HandleFunc("/show", show)
-	http.HandleFunc("/delay", delayRequest)
-	http.HandleFunc("/delay11", delayEleven)
-	http.HandleFunc("/notification", gate.Notification)
-	http.HandleFunc("/notificationH", gate.NotificationHeader)
-	http.HandleFunc("/shownotification", gate.ShowNotification)
+	r := mux.NewRouter()
+	r.SkipClean(true)
 
-	http.HandleFunc("/savenotification", gate.SaveNotifications)
-	http.HandleFunc("/backnotification", gate.BackNotifications)
+	r.HandleFunc("/", start)
+	r.HandleFunc("/ui", ui)
+	r.HandleFunc("/show", show)
+	r.HandleFunc("/delay", delayRequest)
+	r.HandleFunc("/delay11", delayEleven)
+	r.PathPrefix("/notification").HandlerFunc(gate.Notification)
+	r.HandleFunc("/notificationH", gate.NotificationHeader)
+	r.HandleFunc("/shownotification", gate.ShowNotification)
 
-	http.HandleFunc("/saveSolid", solidGate.SaveSolidGateProd)
-	http.HandleFunc("/backSolid", solidGate.BackSolidGateProd)
+	r.HandleFunc("/savenotification", gate.SaveNotifications)
+	r.HandleFunc("/backnotification", gate.BackNotifications)
+
+	r.HandleFunc("/saveSolid", solidGate.SaveSolidGateProd)
+	r.HandleFunc("/backSolid", solidGate.BackSolidGateProd)
 
 	//VMPI
-	http.HandleFunc("/empty", vmpi.Empty)
-	http.HandleFunc("/vmpiResponseAsMerchant", vmpi.VmpiResp)
-	http.HandleFunc("/vmpiCheckRequestFromVisa", vmpi.VmpiCheckRequestFromVisa)
-	http.HandleFunc("/vmpi/transaction-id", vmpi.VmpiResponseExtended)
+	r.HandleFunc("/empty", vmpi.Empty)
+	r.HandleFunc("/vmpiResponseAsMerchant", vmpi.VmpiResp)
+	r.HandleFunc("/vmpiCheckRequestFromVisa", vmpi.VmpiCheckRequestFromVisa)
+	r.HandleFunc("/vmpi/transaction-id", vmpi.VmpiResponseExtended)
 
-	err := http.ListenAndServe(":9099", nil)
+	//http.Handle("/",r)
+	err := http.ListenAndServe(":9099", r)
 
 	if err != nil {
 		fmt.Println(err)
