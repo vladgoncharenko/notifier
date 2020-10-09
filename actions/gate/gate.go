@@ -56,6 +56,13 @@ func Notification(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 }
 
+func NotificationRedirect(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodPost {
+		http.Redirect(w, r, "127.0.0.1/notification", http.StatusSeeOther)
+	}
+	defer r.Body.Close()
+}
+
 func ShowNotification(w http.ResponseWriter, req *http.Request) {
 	if req.Method == http.MethodGet {
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")

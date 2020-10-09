@@ -38,6 +38,7 @@ func main() {
 	r.PathPrefix("/notification").HandlerFunc(gate.Notification)
 	r.HandleFunc("/notificationH", gate.NotificationHeader)
 	r.HandleFunc("/shownotification", gate.ShowNotification)
+	r.HandleFunc("/notificationRedirect", gate.NotificationRedirect)
 
 	r.HandleFunc("/savenotification", gate.SaveNotifications)
 	r.HandleFunc("/backnotification", gate.BackNotifications)
