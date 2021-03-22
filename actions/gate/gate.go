@@ -12,6 +12,7 @@ import (
 
 var notificationGate []interface{}
 var notificationToShow []interface{}
+var lastNotificationToShow []interface{}
 
 func SaveNotifications(w http.ResponseWriter, r *http.Request) {
 	var notific interface{}
@@ -62,9 +63,9 @@ func LastNotification(w http.ResponseWriter, r *http.Request) {
 		body, err := ioutil.ReadAll(r.Body)
 
 		common.ErrorHandler(err)
-		common.ClearSlice(&notificationToShow)
+		common.ClearSlice(&lastNotificationToShow)
 
-		notificationToShow = append(notificationToShow, string(body))
+		lastNotificationToShow = append(lastNotificationToShow, string(body))
 		w.Write([]byte(common.JsonStatusOk))
 	}
 	defer r.Body.Close()
@@ -96,7 +97,7 @@ func ShowLastNotification(w http.ResponseWriter, req *http.Request) {
 	if req.Method == http.MethodGet {
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		var str string
-		for i, res := range notificationToShow {
+		for i, res := range lastNotificationToShow {
 			str += "<span>" + "_______________________________________________________________" + "</span>" + "<p>"
 			str += "<span>" + strconv.Itoa(i+1) + ")" + fmt.Sprint(res) + "</span>" + "<p>"
 			str += "<span>" + "_______________________________________________________________" + "</span>" + "<p>"
