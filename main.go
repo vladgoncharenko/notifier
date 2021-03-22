@@ -40,11 +40,17 @@ func main() {
 	r.HandleFunc("/shownotification", gate.ShowNotification)
 	r.HandleFunc("/notificationRedirect", gate.NotificationRedirect)
 
+	r.PathPrefix("/lastNotification").HandlerFunc(gate.LastNotification)
+	r.HandleFunc("/showLastNotifications", gate.ShowLastNotification)
+
 	r.HandleFunc("/savenotification", gate.SaveNotifications)
 	r.HandleFunc("/backnotification", gate.BackNotifications)
 
 	r.HandleFunc("/saveSolid", solidGate.SaveSolidGateProd)
 	r.HandleFunc("/backSolid", solidGate.BackSolidGateProd)
+
+	r.HandleFunc("/saveSolidLast", solidGate.SaveSolidGateProdLast)
+	r.HandleFunc("/backSolidLast", solidGate.BackSolidGateProdLast)
 
 	//VMPI
 	r.HandleFunc("/empty", vmpi.Empty)
