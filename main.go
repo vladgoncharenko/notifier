@@ -131,3 +131,7 @@ func delayEleven(w http.ResponseWriter, r *http.Request) {
 	}
 	defer r.Body.Close()
 }
+
+func toRevert() {
+	fmt.Println("to_revert")
+}
